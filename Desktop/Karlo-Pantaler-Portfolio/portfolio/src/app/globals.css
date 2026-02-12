@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdfbf7;
+  --foreground: #1a1a1a;
+  --pure-black: #000000;
+  --accent: #2bff00;
+  color-scheme: light only;
+}
+
+@theme {
+  --color-editorial-white: var(--background);
+  --color-editorial-charcoal: var(--foreground);
+  --color-editorial-black: var(--pure-black);
+  --color-electric-accent: var(--accent);
+
+  --font-serif: var(--font-serif), serif;
+  --font-mono: var(--font-mono), monospace;
+  --font-sans: var(--font-sans), sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-serif);
+}
+
+/* Hide system cursor on desktop devices (for custom cursor) */
+@media (hover: hover) and (pointer: fine) {
+
+  body,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  .cursor-none,
+  * {
+    cursor: none !important;
+  }
+}
