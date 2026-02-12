@@ -1,22 +1,33 @@
 "use client";
 
+import { useState } from "react";
 import { WebsiteItem } from "@/types";
 import { useCursor } from "@/context/CursorContext";
 import Image from "next/image";
 
 export function WebDevCard({ item }: { item: WebsiteItem }) {
     const { setCursor } = useCursor();
+    const [isMobileActive, setIsMobileActive] = useState(false);
 
     return (
         <div
             className="group relative w-full perspective-1000 cursor-pointer focus:outline-none"
             onMouseEnter={() => setCursor("dev", item.caseStudyLink ? "CASE STUDY" : "")}
-            onMouseLeave={() => setCursor("default")}
+            onMouseLeave={() => {
+                setCursor("default");
+                setIsMobileActive(false);
+            }}
             tabIndex={0}
-            onClick={() => { /* Void handler to ensure iOS hover/focus behavior */ }}
+            onClick={() => setIsMobileActive(!isMobileActive)}
+            onBlur={(e) => {
+                // Prevent onBlur from firing if clicking inside the component (e.g. the link)
+                if (!e.currentTarget.contains(e.relatedTarget)) {
+                    setIsMobileActive(false);
+                }
+            }}
         >
             {/* Laptop Frame Mockup */}
-            <div className="relative mx-auto w-full aspect-video bg-gray-800 rounded-t-xl shadow-2xl overflow-hidden border-4 border-gray-800 border-b-0 transition-transform duration-500 group-hover:rotate-1 group-focus:rotate-1 group-hover:scale-[1.02] group-focus:scale-[1.02]">
+            <div className={`relative mx-auto w-full aspect-video bg-gray-800 rounded-t-xl shadow-2xl overflow-hidden border-4 border-gray-800 border-b-0 transition-transform duration-500 group-hover:rotate-1 group-hover:scale-[1.02] ${isMobileActive ? 'rotate-1 scale-[1.02]' : ''}`}>
 
                 {/* Screen Content */}
                 <div className="absolute inset-0 bg-editorial-charcoal overflow-hidden">
@@ -26,13 +37,15 @@ export function WebDevCard({ item }: { item: WebsiteItem }) {
                         fill
                         sizes="(max-width: 768px) 100vw, 50vw"
                         quality={80}
-                        className="object-cover transition-transform duration-700 group-hover:scale-105 group-focus:scale-105"
+                        className={`object-cover transition-transform duration-700 group-hover:scale-105 ${isMobileActive ? 'scale-105' : ''}`}
                     />
 
-                    {/* Hover/Focus Content */}
-                    <div className="absolute inset-0 bg-editorial-charcoal/90 opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-6 backdrop-blur-sm pointer-events-none group-hover:pointer-events-auto group-focus:pointer-events-auto group-focus-within:pointer-events-auto">
-                        <h3 className="text-white font-serif text-2xl mb-2 translate-y-4 group-hover:translate-y-0 group-focus:translate-y-0 transition-transform duration-300">{item.title}</h3>
-                        <p className="text-gray-300 font-mono text-xs mb-6 max-w-[200px] translate-y-4 group-hover:translate-y-0 group-focus:translate-y-0 transition-transform duration-300 delay-75">{item.description}</p>
+                    {/* Hover/Focus/Active Content */}
+                    <div className={`absolute inset-0 bg-editorial-charcoal/90 transition-opacity duration-300 flex flex-col items-center justify-center text-center p-6 backdrop-blur-sm 
+                        ${isMobileActive ? 'opacity-100 pointer-events-auto' : 'opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'}`}>
+
+                        <h3 className={`text-white font-serif text-2xl mb-2 transition-transform duration-300 ${isMobileActive ? 'translate-y-0' : 'translate-y-4 group-hover:translate-y-0'}`}>{item.title}</h3>
+                        <p className={`text-gray-300 font-mono text-xs mb-6 max-w-[200px] transition-transform duration-300 delay-75 ${isMobileActive ? 'translate-y-0' : 'translate-y-4 group-hover:translate-y-0'}`}>{item.description}</p>
 
                         <div className="flex gap-2 mb-6">
                             {item.techStack.map(tech => (
@@ -43,13 +56,13 @@ export function WebDevCard({ item }: { item: WebsiteItem }) {
                         </div>
 
                         {(item.liveLink) && (
-                            <div className="flex gap-4 translate-y-4 group-hover:translate-y-0 group-focus:translate-y-0 transition-transform duration-300 delay-100">
+                            <div className={`flex gap-4 transition-transform duration-300 delay-100 ${isMobileActive ? 'translate-y-0' : 'translate-y-4 group-hover:translate-y-0'}`}>
                                 {item.liveLink && (
                                     <a
                                         href={item.liveLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-white border border-white px-6 py-2 font-mono text-sm hover:bg-white hover:text-black focus:bg-white focus:text-black transition-colors uppercase tracking-tight pointer-events-auto"
+                                        className="text-white border border-white px-6 py-2 font-mono text-sm hover:bg-white hover:text-black focus:bg-white focus:text-black transition-colors uppercase tracking-tight pointer-events-auto relative z-20"
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         Live Site
